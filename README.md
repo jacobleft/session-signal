@@ -8,7 +8,7 @@ A large-format session timer with mutually exclusive preparation and presentatio
 - Only one phase timer can run at a time; the session can continue with neither phase active
 - Starting a fresh session automatically starts the selected phase; presentation is the default
 - The active phase becomes the main display while inactive phases stay in the corner
-- The main readout uses plain-zero Courier-style monospaced numerals so digit changes do not shift the display
+- The enlarged main readout uses plain-zero tabular numerals so digit changes do not shift the display
 - Start, resume, or restart either phase without resetting the session clock
 - A visible reset-all control replaces the main action when the session finishes
 - Configurable minutes and seconds for each timer

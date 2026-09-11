@@ -271,11 +271,11 @@ select:focus-visible {
   width: 100%;
   align-self: center;
   color: var(--base-content);
-  font-family: "Courier New", "Nimbus Mono PS", "Liberation Mono", Courier, monospace;
-  font-size: clamp(9rem, 24vw, 21rem);
-  font-weight: 300;
+  font-family: "Avenir Next", Avenir, "Segoe UI", Arial, sans-serif;
+  font-size: clamp(11rem, 30vw, 28rem);
+  font-weight: 400;
   line-height: .84;
-  letter-spacing: -.075em;
+  letter-spacing: -.025em;
   text-align: center;
   white-space: nowrap;
   font-variant-numeric: tabular-nums lining-nums;
@@ -609,7 +609,7 @@ kbd {
   .wake-indicator { display: none; }
   .icon-button { width: 36px; height: 36px; }
   .presentation-stage { padding: 42px 0 26px; }
-  .presentation-time { font-size: clamp(7rem, 32vw, 11rem); }
+  .presentation-time { font-size: clamp(8rem, 42vw, 13rem); }
   .presentation-time.has-hours { font-size: clamp(4.5rem, 21vw, 7rem); }
   .presentation-progress, .presentation-stage__controls { width: min(86vw, 500px); }
   .presentation-state { visibility: hidden; }
