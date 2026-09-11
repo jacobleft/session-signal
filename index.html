@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en" data-theme="sunset">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#1b232d" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
       content="A clear, synchronized dual timer for interviews and presentations."
@@ -121,14 +121,21 @@
           <label class="select-field">
             <span>Visual theme</span>
             <select id="visualTheme">
-              <option value="sunset">Sunset</option>
-              <option value="nord">Nord</option>
-              <option value="dracula">Dracula</option>
-              <option value="synthwave">Synthwave</option>
-              <option value="cyberpunk">Cyberpunk</option>
-              <option value="business">Business</option>
-              <option value="coffee">Coffee</option>
-              <option value="light">Light</option>
+              <optgroup label="Light themes">
+                <option value="light">Light</option>
+                <option value="corporate">Corporate</option>
+                <option value="winter">Winter</option>
+                <option value="lemonade">Lemonade</option>
+              </optgroup>
+              <optgroup label="Dark themes">
+                <option value="sunset">Sunset</option>
+                <option value="dracula">Dracula</option>
+                <option value="business">Business</option>
+                <option value="coffee">Coffee</option>
+              </optgroup>
+              <optgroup label="Accessibility">
+                <option value="high-contrast">High contrast</option>
+              </optgroup>
             </select>
           </label>
         </fieldset>

@@ -5,8 +5,8 @@ import { loadSettings, saveSettings } from "./storage.js";
 const $ = (selector, scope = document) => scope.querySelector(selector);
 
 let settings = loadSettings();
-const THEME_IDS = ["sunset", "nord", "dracula", "synthwave", "cyberpunk", "business", "coffee", "light"];
-if (!THEME_IDS.includes(settings.visualTheme)) settings.visualTheme = "sunset";
+const THEME_IDS = ["light", "corporate", "winter", "lemonade", "sunset", "dracula", "business", "coffee", "high-contrast"];
+if (!THEME_IDS.includes(settings.visualTheme)) settings.visualTheme = "light";
 const sound = new SoundEngine();
 let animationFrame = null;
 let wakeLock = null;
@@ -189,6 +189,7 @@ function saveForm(event) {
     return;
   }
   settings = {
+    version: settings.version,
     presentationSeconds,
     sessionSeconds,
     soundStyle: $("#soundStyle").value,
