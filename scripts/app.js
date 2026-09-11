@@ -142,8 +142,13 @@ function resetTimers(timerNames) {
 function toggleMainTimer() {
   const activePhase = phaseNames.find((name) => timers[name].state === "running");
   const mainName = activePhase ?? "session";
-  if (timers[mainName].state === "running") pauseTimers([mainName]);
-  else if (timers[mainName].state !== "complete") startTimers([mainName]);
+  if (timers[mainName].state === "running") {
+    pauseTimers([mainName]);
+  } else if (mainName === "session" && timers.session.state === "ready") {
+    activatePhase(settings.autoStartPhase);
+  } else if (timers[mainName].state !== "complete") {
+    startTimers([mainName]);
+  }
 }
 
 function activatePhase(name) {
@@ -166,13 +171,14 @@ function renderMainControls() {
   const mainTimer = timers[mainName];
   const button = $("#mainActionButton");
   const isRunning = mainTimer.state === "running";
+  const autoStartLabel = timerConfig[settings.autoStartPhase].label.toLowerCase();
   const label = mainTimer.state === "complete"
     ? "Finished"
     : isRunning
       ? `Pause ${timerConfig[mainName].label.toLowerCase()}`
       : mainTimer.state === "paused"
         ? "Resume session"
-        : "Start session";
+        : `Start ${autoStartLabel} + session`;
 
   $("span", button).textContent = label;
   button.disabled = mainTimer.state === "complete";
@@ -253,6 +259,7 @@ function populateSettingsForm() {
   $("#volumeOutput").textContent = `${Math.round(settings.volume * 100)}%`;
   $("#startSound").checked = settings.startSound;
   $("#visualTheme").value = settings.visualTheme;
+  $(`input[name="autoStartPhase"][value="${settings.autoStartPhase}"]`).checked = true;
 }
 
 function secondsFromInputs(name) {
@@ -278,6 +285,7 @@ function saveForm(event) {
     preparationSeconds,
     presentationSeconds,
     sessionSeconds,
+    autoStartPhase: $('input[name="autoStartPhase"]:checked').value,
     soundStyle: $("#soundStyle").value,
     alarmDurationSeconds: Number($("#alarmDuration").value),
     volume: Number($("#volume").value) / 100,

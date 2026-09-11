@@ -6,6 +6,7 @@ A large-format session timer with mutually exclusive preparation and presentatio
 
 - Continuous full-session count-up timer plus preparation and presentation phase timers
 - Only one phase timer can run at a time; the session can continue with neither phase active
+- Starting a fresh session automatically starts the selected phase; presentation is the default
 - The active phase becomes the main display while inactive phases stay in the corner
 - Start, resume, or restart either phase without resetting the session clock
 - Configurable minutes and seconds for each timer
@@ -28,7 +29,7 @@ Then open <http://localhost:4173>.
 
 | Key | Action |
 | --- | --- |
-| Space | Start or pause both timers |
+| Space | Start or pause the main timer |
 | R | Reset both timers |
 | F | Enter or leave full screen |
 | S | Open settings |

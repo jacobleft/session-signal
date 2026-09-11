@@ -16,7 +16,7 @@ body {
 
 button, input, select { font: inherit; }
 button { color: inherit; }
-button, select, input[type="range"], input[type="checkbox"] { cursor: pointer; }
+button, select, input[type="range"], input[type="checkbox"], input[type="radio"] { cursor: pointer; }
 
 button:focus-visible,
 input:focus-visible,
@@ -465,6 +465,76 @@ input[type="number"], select {
 .range-field > span { display: flex; justify-content: space-between; }
 input[type="range"] { width: 100%; accent-color: var(--primary); }
 
+.field-note {
+  margin: -3px 0 13px;
+  color: var(--base-muted);
+  font-size: .75rem;
+  line-height: 1.45;
+}
+
+.autostart-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.autostart-option {
+  position: relative;
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 19px 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 11px;
+  border: 1px solid color-mix(in srgb, var(--base-content) 14%, transparent);
+  border-radius: 9px;
+  background: var(--base-100);
+  cursor: pointer;
+}
+
+.autostart-option:has(input:checked) {
+  border-color: color-mix(in srgb, var(--primary) 65%, var(--base-content));
+  background: color-mix(in srgb, var(--primary) 8%, var(--base-100));
+}
+
+.autostart-option input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.autostart-option__check {
+  position: relative;
+  width: 19px;
+  height: 19px;
+  border: 1.5px solid color-mix(in srgb, var(--base-content) 35%, transparent);
+  border-radius: 5px;
+  background: var(--base-100);
+}
+
+.autostart-option__check::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 2px;
+  width: 5px;
+  height: 9px;
+  border: solid var(--primary-content);
+  border-width: 0 2px 2px 0;
+  opacity: 0;
+  transform: rotate(45deg);
+}
+
+.autostart-option input:checked + .autostart-option__check {
+  border-color: var(--primary);
+  background: var(--primary);
+}
+
+.autostart-option input:checked + .autostart-option__check::after { opacity: 1; }
+.autostart-option input:focus-visible + .autostart-option__check { outline: 2px solid var(--primary); outline-offset: 2px; }
+.autostart-option span { min-width: 0; display: grid; gap: 3px; font-size: .82rem; }
+.autostart-option small { color: var(--base-muted); font-size: .68rem; line-height: 1.2; }
+
 .switch-field {
   position: relative;
   display: grid;
@@ -552,6 +622,7 @@ kbd {
   .presentation-time { font-size: 31vw; }
   .settings-drawer { padding: 22px 18px; }
   .duration-row { grid-template-columns: 1fr 66px 66px; }
+  .autostart-options { grid-template-columns: 1fr; }
   .alarm-banner { align-items: stretch; flex-direction: column; }
 }
 

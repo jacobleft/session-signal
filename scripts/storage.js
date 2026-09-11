@@ -6,6 +6,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   preparationSeconds: 2 * 60,
   presentationSeconds: 5 * 60,
   sessionSeconds: 20 * 60,
+  autoStartPhase: "presentation",
   soundStyle: "chime",
   alarmDurationSeconds: 8,
   volume: 0.7,
@@ -25,6 +26,9 @@ export function loadSettings() {
     const stored = { ...DEFAULT_SETTINGS, ...saved };
     if (saved?.version !== SETTINGS_VERSION) stored.visualTheme = "light";
     stored.visualTheme = LEGACY_THEMES[stored.visualTheme] ?? stored.visualTheme;
+    if (!["preparation", "presentation"].includes(stored.autoStartPhase)) {
+      stored.autoStartPhase = DEFAULT_SETTINGS.autoStartPhase;
+    }
     return stored;
   } catch {
     return { ...DEFAULT_SETTINGS };

@@ -125,6 +125,23 @@
         </fieldset>
 
         <fieldset>
+          <legend>Auto-start with session</legend>
+          <p class="field-note">Choose the phase that starts with the full-session timer.</p>
+          <div class="autostart-options" role="radiogroup" aria-label="Phase to auto-start">
+            <label class="autostart-option">
+              <input id="autoStartPresentation" type="radio" name="autoStartPhase" value="presentation" checked />
+              <i class="autostart-option__check" aria-hidden="true"></i>
+              <span><strong>Presentation</strong><small>Default</small></span>
+            </label>
+            <label class="autostart-option">
+              <input id="autoStartPreparation" type="radio" name="autoStartPhase" value="preparation" />
+              <i class="autostart-option__check" aria-hidden="true"></i>
+              <span><strong>Preparation</strong><small>Starts before presenting</small></span>
+            </label>
+          </div>
+        </fieldset>
+
+        <fieldset>
           <legend>Sound</legend>
           <label class="select-field">
             <span>Alarm style</span>
