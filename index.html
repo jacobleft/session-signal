@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en" data-theme="control-room">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#101216" />
+    <meta
+      name="description"
+      content="A clear, synchronized dual timer for interviews and presentations."
+    />
+    <title>Session Signal — Dual interview timer</title>
+    <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles/theme.css" />
+    <link rel="stylesheet" href="./styles/app.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <div class="brand" aria-label="Session Signal">
+          <span class="brand-mark" aria-hidden="true">
+            <span></span><span></span>
+          </span>
+          <span>Session Signal</span>
+        </div>
+        <div class="topbar-actions">
+          <span class="status-chip" id="wakeStatus" title="Keeps the display awake while timers run">
+            <span class="status-dot" aria-hidden="true"></span>
+            Screen awake
+          </span>
+          <button class="icon-button" id="fullscreenButton" type="button" aria-label="Enter full screen" title="Full screen (F)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5m13 5h5v-5"/></svg>
+          </button>
+          <button class="icon-button" id="settingsButton" type="button" aria-label="Open settings" aria-expanded="false" title="Settings (S)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.55V21h-4v-.08A1.7 1.7 0 0 0 8.96 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1.03H3v-4h.08A1.7 1.7 0 0 0 4.6 8.94a1.7 1.7 0 0 0-.34-1.88L4.2 7l2.83-2.83.06.06A1.7 1.7 0 0 0 8.96 4.6 1.7 1.7 0 0 0 10 3.08V3h4v.08a1.7 1.7 0 0 0 1.03 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06L19.8 7l-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.92 10H21v4h-.08A1.7 1.7 0 0 0 19.4 15Z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="timer-grid" aria-label="Interview timers">
+        <article class="timer-panel timer-panel--presentation" data-timer="presentation">
+          <header class="timer-heading">
+            <div>
+              <span class="timer-symbol" aria-hidden="true"></span>
+              <h1>Presentation</h1>
+            </div>
+            <span class="timer-state" id="presentationState">Ready</span>
+          </header>
+          <div class="time-display" id="presentationDisplay" role="timer" aria-live="off">05:00</div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="presentationProgress"></div>
+          </div>
+          <div class="timer-actions">
+            <button class="button button--quiet" data-action="toggle" data-target="presentation" type="button">Start</button>
+            <button class="button button--text" data-action="reset" data-target="presentation" type="button">Reset</button>
+          </div>
+        </article>
+
+        <article class="timer-panel timer-panel--session" data-timer="session">
+          <header class="timer-heading">
+            <div>
+              <span class="timer-symbol" aria-hidden="true"></span>
+              <h1>Full session</h1>
+            </div>
+            <span class="timer-state" id="sessionState">Ready</span>
+          </header>
+          <div class="time-display" id="sessionDisplay" role="timer" aria-live="off">20:00</div>
+          <div class="progress-track" aria-hidden="true">
+            <div class="progress-bar" id="sessionProgress"></div>
+          </div>
+          <div class="timer-actions">
+            <button class="button button--quiet" data-action="toggle" data-target="session" type="button">Start</button>
+            <button class="button button--text" data-action="reset" data-target="session" type="button">Reset</button>
+          </div>
+        </article>
+      </section>
+
+      <footer class="master-controls">
+        <p class="keyboard-hint"><kbd>Space</kbd> starts or pauses both timers</p>
+        <div class="master-actions">
+          <button class="button button--primary" id="startBothButton" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z"/></svg>
+            <span>Start both</span>
+          </button>
+          <button class="button button--secondary" id="resetBothButton" type="button">Reset both</button>
+        </div>
+        <p class="shortcut-hint"><kbd>R</kbd> resets both</p>
+      </footer>
+    </main>
+
+    <div class="alarm-banner" id="alarmBanner" role="alert" hidden>
+      <div>
+        <strong id="alarmTitle">Time is up</strong>
+        <span id="alarmMessage">Presentation timer finished</span>
+      </div>
+      <button class="button button--light" id="dismissAlarmButton" type="button">Dismiss alarm</button>
+    </div>
+
+    <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>
+    <aside class="settings-drawer" id="settingsDrawer" aria-labelledby="settingsTitle" aria-hidden="true">
+      <header class="drawer-header">
+        <div>
+          <h2 id="settingsTitle">Timer setup</h2>
+          <p>Changes apply when a timer is reset.</p>
+        </div>
+        <button class="icon-button" id="closeSettingsButton" type="button" aria-label="Close settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+        </button>
+      </header>
+
+      <form id="settingsForm">
+        <fieldset>
+          <legend>Durations</legend>
+          <div class="duration-row">
+            <span class="field-name"><i class="field-dot field-dot--presentation"></i>Presentation</span>
+            <label><span>Minutes</span><input id="presentationMinutes" type="number" min="0" max="599" value="5" inputmode="numeric" /></label>
+            <label><span>Seconds</span><input id="presentationSeconds" type="number" min="0" max="59" value="0" inputmode="numeric" /></label>
+          </div>
+          <div class="duration-row">
+            <span class="field-name"><i class="field-dot field-dot--session"></i>Full session</span>
+            <label><span>Minutes</span><input id="sessionMinutes" type="number" min="0" max="599" value="20" inputmode="numeric" /></label>
+            <label><span>Seconds</span><input id="sessionSeconds" type="number" min="0" max="59" value="0" inputmode="numeric" /></label>
+          </div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Sound</legend>
+          <label class="select-field">
+            <span>Alarm style</span>
+            <select id="soundStyle">
+              <option value="chime">Clear chime</option>
+              <option value="bell">Desk bell</option>
+              <option value="pulse">Digital pulse</option>
+              <option value="gentle">Gentle tone</option>
+            </select>
+          </label>
+          <label class="range-field">
+            <span>Volume <output id="volumeOutput">70%</output></span>
+            <input id="volume" type="range" min="0" max="100" value="70" />
+          </label>
+          <label class="switch-field">
+            <span><strong>Start sound</strong><small>Play a short cue when timers start</small></span>
+            <input id="startSound" type="checkbox" checked />
+            <i aria-hidden="true"></i>
+          </label>
+          <button class="button button--secondary button--wide" id="previewSoundButton" type="button">Preview alarm</button>
+        </fieldset>
+
+        <fieldset>
+          <legend>Display</legend>
+          <label class="select-field">
+            <span>Visual theme</span>
+            <select id="visualTheme">
+              <option value="control-room">Control room</option>
+              <option value="paper">Paper light</option>
+              <option value="contrast">High contrast</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <button class="button button--primary button--wide" type="submit">Save and reset timers</button>
+      </form>
+    </aside>
+
+    <script type="module" src="./scripts/app.js"></script>
+  </body>
+</html>
