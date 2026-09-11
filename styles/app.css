@@ -434,6 +434,42 @@ input[type="range"] { width: 100%; accent-color: var(--primary); }
 .switch-field input:focus-visible + i { outline: 2px solid var(--primary); outline-offset: 2px; }
 #previewSoundButton { margin-top: 17px; }
 
+.shortcut-list {
+  display: grid;
+  gap: 9px;
+  margin: 0;
+}
+
+.shortcut-list > div {
+  display: grid;
+  grid-template-columns: 62px 1fr;
+  align-items: center;
+  min-height: 32px;
+}
+
+.shortcut-list dt,
+.shortcut-list dd { margin: 0; }
+
+.shortcut-list dd {
+  color: var(--base-muted);
+  font-size: .78rem;
+}
+
+kbd {
+  min-width: 30px;
+  display: inline-block;
+  padding: 4px 7px;
+  border: 1px solid color-mix(in srgb, var(--base-content) 18%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--base-content) 32%, transparent);
+  border-radius: 6px;
+  color: var(--base-content);
+  background: var(--base-100);
+  font: inherit;
+  font-size: .72rem;
+  font-weight: 600;
+  text-align: center;
+}
+
 @media (max-width: 680px) {
   .app-shell { padding-inline: 14px; }
   .topbar { min-height: 64px; gap: 8px; }
