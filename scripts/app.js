@@ -12,10 +12,12 @@ let animationFrame = null;
 let wakeLock = null;
 
 const timerConfig = {
-  presentation: { label: "Presentation", shortLabel: "Presentation", durationKey: "presentationSeconds" },
-  session: { label: "Full session", shortLabel: "Session", durationKey: "sessionSeconds" },
+  preparation: { label: "Preparation", shortLabel: "Preparation", compactLabel: "Prep", durationKey: "preparationSeconds" },
+  presentation: { label: "Presentation", shortLabel: "Presentation", compactLabel: "PPT", durationKey: "presentationSeconds" },
+  session: { label: "Full session", shortLabel: "Session", compactLabel: "Session", durationKey: "sessionSeconds" },
 };
 
+const phaseNames = ["preparation", "presentation"];
 const stateLabels = { ready: "Ready", running: "Running", paused: "Paused", complete: "Time up" };
 
 const timers = Object.fromEntries(
@@ -38,15 +40,43 @@ function renderDisplay(display, name, snapshot) {
   );
 }
 
-function renderViews() {
-  if (!timers.presentation || !timers.session) return;
+function renderCorner(slot, name) {
+  const snapshot = timers[name].snapshot();
+  const corner = $(`#cornerClock${slot}`);
+  const action = $(`#cornerAction${slot}`);
 
-  const mainName = timers.presentation.state === "complete" ? "session" : "presentation";
-  const cornerName = mainName === "presentation" ? "session" : "presentation";
+  renderDisplay($(`#cornerDisplay${slot}`), name, snapshot);
+  const cornerLabel = $(`#cornerLabel${slot}`);
+  cornerLabel.textContent = timerConfig[name].shortLabel;
+  cornerLabel.dataset.compactLabel = timerConfig[name].compactLabel;
+  $(`#cornerTarget${slot}`).textContent = formatDuration(snapshot.durationMs);
+  $(`#cornerProgress${slot}`).style.transform = `scaleX(${Math.max(0, snapshot.progress)})`;
+  corner.dataset.timer = name;
+  corner.setAttribute("aria-label", `${timerConfig[name].label} timer`);
+  corner.classList.toggle("is-warning", snapshot.state === "running" && snapshot.remainingMs <= 60_000);
+  corner.classList.toggle("is-complete", snapshot.state === "complete");
+
+  const showAction = name !== "session" && timers.session.state !== "complete";
+  action.hidden = !showAction;
+  action.dataset.timer = name;
+  if (showAction) {
+    const isComplete = snapshot.state === "complete";
+    $("span", action).textContent = isComplete ? "Restart" : snapshot.state === "paused" ? "Resume" : "Start";
+    $("path", action).setAttribute("d", isComplete ? "M4 4v6h6M5.6 15a7 7 0 1 0 .4-7.5L4 10" : "m8 5 11 7-11 7V5Z");
+    action.setAttribute("aria-label", `${$("span", action).textContent} ${timerConfig[name].label.toLowerCase()} timer`);
+  }
+}
+
+function renderViews() {
+  if (!timers.preparation || !timers.presentation || !timers.session) return;
+
+  const activePhase = phaseNames.find((name) => timers[name].state === "running");
+  const mainName = activePhase ?? "session";
+  const cornerNames = mainName === "session"
+    ? phaseNames
+    : ["session", phaseNames.find((name) => name !== mainName)];
   const mainSnapshot = timers[mainName].snapshot();
-  const cornerSnapshot = timers[cornerName].snapshot();
   const stage = $("#mainStage");
-  const corner = $("#cornerClock");
 
   renderDisplay($("#mainDisplay"), mainName, mainSnapshot);
   $("#mainTitle").textContent = timerConfig[mainName].label;
@@ -57,26 +87,18 @@ function renderViews() {
   stage.classList.toggle("is-warning", mainSnapshot.state === "running" && mainSnapshot.remainingMs <= 60_000);
   stage.classList.toggle("is-complete", mainSnapshot.state === "complete");
 
-  renderDisplay($("#cornerDisplay"), cornerName, cornerSnapshot);
-  $("#cornerLabel").textContent = timerConfig[cornerName].shortLabel;
-  $("#cornerTarget").textContent = formatDuration(cornerSnapshot.durationMs);
-  $("#cornerProgress").style.transform = `scaleX(${Math.max(0, cornerSnapshot.progress)})`;
-  corner.setAttribute("aria-label", `${timerConfig[cornerName].label} timer`);
-  corner.classList.toggle("is-warning", cornerSnapshot.state === "running" && cornerSnapshot.remainingMs <= 60_000);
-  corner.classList.toggle("is-complete", cornerSnapshot.state === "complete");
+  renderCorner("A", cornerNames[0]);
+  renderCorner("B", cornerNames[1]);
 
   Object.entries(timers).forEach(([name, timer]) => {
     $(`#${name}State`).textContent = stateLabels[timer.state];
   });
 
-  $("#restartPresentationButton").hidden = !(
-    timers.presentation.state === "complete" && timers.session.state !== "complete"
-  );
 }
 
 function tickLoop() {
   Object.values(timers).forEach((timer) => timer.tick());
-  renderMasterControls();
+  renderMainControls();
   if (Object.values(timers).some((timer) => timer.state === "running")) {
     animationFrame = requestAnimationFrame(tickLoop);
   } else {
@@ -97,12 +119,12 @@ function startTimers(timerNames, withCue = true) {
   requestWakeLock();
   ensureTickLoop();
   renderViews();
-  renderMasterControls();
+  renderMainControls();
 }
 
 function pauseTimers(timerNames) {
   timerNames.forEach((name) => timers[name].pause());
-  renderMasterControls();
+  renderMainControls();
 }
 
 function resetTimers(timerNames) {
@@ -113,31 +135,56 @@ function resetTimers(timerNames) {
   });
   dismissAlarm();
   renderViews();
-  renderMasterControls();
+  renderMainControls();
   if (!Object.values(timers).some((timer) => timer.state === "running")) releaseWakeLock();
 }
 
-function toggleBoth() {
-  const names = Object.keys(timers);
-  if (names.some((name) => timers[name].state === "running")) pauseTimers(names);
-  else startTimers(names);
+function toggleMainTimer() {
+  const activePhase = phaseNames.find((name) => timers[name].state === "running");
+  const mainName = activePhase ?? "session";
+  if (timers[mainName].state === "running") pauseTimers([mainName]);
+  else if (timers[mainName].state !== "complete") startTimers([mainName]);
 }
 
-function restartPresentation() {
-  timers.presentation.reset(settings.presentationSeconds * 1000);
-  startTimers(["presentation"]);
+function activatePhase(name) {
+  if (!phaseNames.includes(name) || timers.session.state === "complete") return;
+
+  phaseNames.forEach((phaseName) => {
+    if (phaseName !== name && timers[phaseName].state === "running") timers[phaseName].pause();
+  });
+  if (timers[name].state === "complete") timers[name].reset(settings[timerConfig[name].durationKey] * 1000);
+
+  const timersToStart = [];
+  if (timers.session.state !== "running") timersToStart.push("session");
+  if (timers[name].state !== "running") timersToStart.push(name);
+  startTimers(timersToStart);
 }
 
-function renderMasterControls() {
-  const anyRunning = Object.values(timers).some((timer) => timer.state === "running");
-  const allComplete = Object.values(timers).every((timer) => timer.state === "complete");
-  const button = $("#startBothButton");
-  $("span", button).textContent = anyRunning ? "Pause" : allComplete ? "Finished" : "Start";
-  button.disabled = allComplete;
-  $("svg path", button).setAttribute("d", anyRunning ? "M7 5h4v14H7V5Zm6 0h4v14h-4V5Z" : "m8 5 11 7-11 7V5Z");
+function renderMainControls() {
+  const activePhase = phaseNames.find((name) => timers[name].state === "running");
+  const mainName = activePhase ?? "session";
+  const mainTimer = timers[mainName];
+  const button = $("#mainActionButton");
+  const isRunning = mainTimer.state === "running";
+  const label = mainTimer.state === "complete"
+    ? "Finished"
+    : isRunning
+      ? `Pause ${timerConfig[mainName].label.toLowerCase()}`
+      : mainTimer.state === "paused"
+        ? "Resume session"
+        : "Start session";
+
+  $("span", button).textContent = label;
+  button.disabled = mainTimer.state === "complete";
+  $("svg path", button).setAttribute("d", isRunning ? "M7 5h4v14H7V5Zm6 0h4v14h-4V5Z" : "m8 5 11 7-11 7V5Z");
 }
 
 function handleComplete(name) {
+  if (name === "session") {
+    phaseNames.forEach((phaseName) => {
+      if (timers[phaseName].state === "running") timers[phaseName].pause();
+    });
+  }
   renderViews();
   sound.play("alarm", settings.soundStyle, settings.volume, settings.alarmDurationSeconds);
   $("#alarmTitle").textContent = "Time is up";
@@ -181,7 +228,7 @@ function openSettings() {
   $("#settingsDrawer").classList.add("is-open");
   $("#settingsDrawer").setAttribute("aria-hidden", "false");
   $("#settingsButton").setAttribute("aria-expanded", "true");
-  setTimeout(() => $("#presentationMinutes").focus(), 50);
+  setTimeout(() => $("#preparationMinutes").focus(), 50);
 }
 
 function closeSettings() {
@@ -195,7 +242,7 @@ function closeSettings() {
 }
 
 function populateSettingsForm() {
-  ["presentation", "session"].forEach((name) => {
+  ["preparation", "presentation", "session"].forEach((name) => {
     const total = settings[timerConfig[name].durationKey];
     $(`#${name}Minutes`).value = Math.floor(total / 60);
     $(`#${name}Seconds`).value = total % 60;
@@ -216,10 +263,11 @@ function secondsFromInputs(name) {
 
 function saveForm(event) {
   event.preventDefault();
+  const preparationSeconds = secondsFromInputs("preparation");
   const presentationSeconds = secondsFromInputs("presentation");
   const sessionSeconds = secondsFromInputs("session");
-  if (!presentationSeconds || !sessionSeconds) {
-    const emptyName = !presentationSeconds ? "presentation" : "session";
+  if (!preparationSeconds || !presentationSeconds || !sessionSeconds) {
+    const emptyName = ["preparation", "presentation", "session"].find((name) => !secondsFromInputs(name));
     $(`#${emptyName}Minutes`).setCustomValidity("Set a duration greater than zero.");
     $(`#${emptyName}Minutes`).reportValidity();
     $(`#${emptyName}Minutes`).setCustomValidity("");
@@ -227,6 +275,7 @@ function saveForm(event) {
   }
   settings = {
     version: settings.version,
+    preparationSeconds,
     presentationSeconds,
     sessionSeconds,
     soundStyle: $("#soundStyle").value,
@@ -246,8 +295,10 @@ async function toggleFullscreen() {
   else await document.exitFullscreen?.();
 }
 
-$("#startBothButton").addEventListener("click", toggleBoth);
-$("#restartPresentationButton").addEventListener("click", restartPresentation);
+$("#mainActionButton").addEventListener("click", toggleMainTimer);
+["A", "B"].forEach((slot) => {
+  $(`#cornerAction${slot}`).addEventListener("click", (event) => activatePhase(event.currentTarget.dataset.timer));
+});
 $("#dismissAlarmButton").addEventListener("click", dismissAlarm);
 $("#settingsButton").addEventListener("click", openSettings);
 $("#closeSettingsButton").addEventListener("click", closeSettings);
@@ -275,7 +326,7 @@ document.addEventListener("keydown", (event) => {
   const isTyping = ["INPUT", "SELECT", "TEXTAREA"].includes(document.activeElement?.tagName);
   if (event.key === "Escape" && $("#settingsDrawer").classList.contains("is-open")) closeSettings();
   if (isTyping || $("#settingsDrawer").classList.contains("is-open")) return;
-  if (event.code === "Space") { event.preventDefault(); toggleBoth(); }
+  if (event.code === "Space") { event.preventDefault(); toggleMainTimer(); }
   if (event.key.toLowerCase() === "r") resetTimers(Object.keys(timers));
   if (event.key.toLowerCase() === "f") toggleFullscreen();
   if (event.key.toLowerCase() === "s") openSettings();
@@ -283,4 +334,4 @@ document.addEventListener("keydown", (event) => {
 
 document.documentElement.dataset.theme = settings.visualTheme;
 renderViews();
-renderMasterControls();
+renderMainControls();

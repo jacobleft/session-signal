@@ -3,6 +3,7 @@ const SETTINGS_VERSION = 2;
 
 export const DEFAULT_SETTINGS = Object.freeze({
   version: SETTINGS_VERSION,
+  preparationSeconds: 2 * 60,
   presentationSeconds: 5 * 60,
   sessionSeconds: 20 * 60,
   soundStyle: "chime",

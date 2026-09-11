@@ -1,12 +1,13 @@
 # Session Signal
 
-A large-format dual count-up timer for interviews, presentations, and timed sessions. One master control starts a presentation timer and a discreet full-session timer at the same moment.
+A large-format session timer with mutually exclusive preparation and presentation phase timers for interviews and timed sessions.
 
 ## Features
 
-- Two synchronized count-up timers that begin at `00:00` and stop at their configured targets
-- Automatic handoff to the full-session clock when presentation time expires
-- One-click presentation restart without resetting or interrupting the session clock
+- Continuous full-session count-up timer plus preparation and presentation phase timers
+- Only one phase timer can run at a time; the session can continue with neither phase active
+- The active phase becomes the main display while inactive phases stay in the corner
+- Start, resume, or restart either phase without resetting the session clock
 - Configurable minutes and seconds for each timer
 - Four synthesized alarm styles, 4/8/15-second alarm lengths, volume control, start cue, and alarm preview
 - Four light themes, four dark themes, and a dedicated high-contrast theme

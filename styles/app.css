@@ -87,15 +87,19 @@ select:focus-visible {
   gap: 8px;
 }
 
+.corner-clocks {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .session-clock {
-  width: 224px;
+  width: 198px;
   padding: 9px 12px 8px;
   border-radius: 12px;
   background: var(--base-200);
   color: var(--base-muted);
 }
-
-.session-clock:has(.corner-restart:not([hidden])) { width: 268px; }
 
 .session-clock__readout {
   display: flex;
@@ -149,7 +153,7 @@ select:focus-visible {
   background: var(--secondary);
 }
 
-.corner-restart {
+.corner-action {
   min-height: 25px;
   display: inline-flex;
   align-items: center;
@@ -164,10 +168,15 @@ select:focus-visible {
   font-weight: 700;
 }
 
-.corner-restart[hidden] { display: none; }
-.corner-restart:hover { background: var(--base-300); }
-.corner-restart:active { transform: scale(.96); }
-.corner-restart svg { width: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.corner-action[hidden] { display: none; }
+.corner-action:hover { background: var(--base-300); }
+.corner-action:active { transform: scale(.96); }
+.corner-action svg { width: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+.session-clock[data-timer="preparation"] .session-clock__track span { background: var(--accent); }
+.session-clock[data-timer="preparation"] .corner-action { color: var(--accent); }
+.session-clock[data-timer="presentation"] .session-clock__track span { background: var(--primary); }
+.session-clock[data-timer="presentation"] .corner-action { color: var(--primary); }
 
 .wake-indicator {
   width: 18px;
@@ -296,6 +305,11 @@ select:focus-visible {
 .presentation-stage[data-active-timer="session"] .signal-dot,
 .presentation-stage[data-active-timer="session"] .presentation-progress span {
   background: var(--secondary);
+}
+
+.presentation-stage[data-active-timer="preparation"] .signal-dot,
+.presentation-stage[data-active-timer="preparation"] .presentation-progress span {
+  background: var(--accent);
 }
 
 .presentation-stage__controls {
@@ -432,6 +446,7 @@ legend {
 .field-name { align-self: center; display: flex; align-items: center; gap: 8px; font-size: .88rem; font-weight: 500; }
 .field-dot { width: 7px; height: 7px; border-radius: 50%; }
 .field-dot--presentation { background: var(--primary); }
+.field-dot--preparation { background: var(--accent); }
 .field-dot--session { background: var(--secondary); }
 .duration-row label, .select-field, .range-field { display: grid; gap: 7px; }
 .duration-row label span, .select-field > span, .range-field > span { color: var(--base-muted); font-size: .7rem; }
@@ -509,12 +524,19 @@ kbd {
   .topbar { min-height: 64px; gap: 8px; }
   .brand > span:last-child { display: none; }
   .operator-corner { gap: 3px; }
+  .corner-clocks { gap: 4px; }
   .session-clock { width: 138px; padding-inline: 9px; }
-  .session-clock:has(.corner-restart:not([hidden])) { width: 184px; }
-  .session-clock__label { display: none; }
+  .session-clock__label {
+    max-width: 52px;
+    overflow: hidden;
+    font-size: 0;
+    text-overflow: ellipsis;
+  }
+  .session-clock__label::after { content: attr(data-compact-label); font-size: .62rem; }
+  .session-clock__target { display: none; }
   .session-clock__readout { justify-content: center; }
   .session-clock__time { font-size: .84rem; }
-  .corner-restart span { display: none; }
+  .corner-action span { display: none; }
   .wake-indicator { display: none; }
   .icon-button { width: 36px; height: 36px; }
   .presentation-stage { padding: 42px 0 26px; }
@@ -526,7 +548,6 @@ kbd {
 
 @media (max-width: 390px) {
   .session-clock { width: 112px; }
-  .session-clock__target { display: none; }
   .presentation-stage__label h1 { font-size: .9rem; }
   .presentation-time { font-size: 31vw; }
   .settings-drawer { padding: 22px 18px; }
