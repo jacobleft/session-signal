@@ -21,14 +21,19 @@
           <span>Session Signal</span>
         </div>
         <div class="operator-corner">
-          <aside class="session-clock" data-timer="session" aria-label="Full session timer">
+          <aside class="session-clock" id="cornerClock" aria-label="Secondary timer">
             <div class="session-clock__readout">
-              <span class="session-clock__label">Session</span>
-              <span class="session-clock__time" id="sessionDisplay" role="timer" aria-live="off">00:00</span>
-              <span class="session-clock__target">/ <span id="sessionTarget">20:00</span></span>
+              <span class="session-clock__label" id="cornerLabel">Session</span>
+              <span class="session-clock__time" id="cornerDisplay" role="timer" aria-live="off">00:00</span>
+              <span class="session-clock__target">/ <span id="cornerTarget">20:00</span></span>
             </div>
-            <div class="session-clock__track" aria-hidden="true"><span id="sessionProgress"></span></div>
-            <span class="visually-hidden" id="sessionState">Ready</span>
+            <div class="session-clock__footer">
+              <div class="session-clock__track" aria-hidden="true"><span id="cornerProgress"></span></div>
+              <button class="corner-restart" id="restartPresentationButton" type="button" title="Restart presentation timer" hidden>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v6h6M5.6 15a7 7 0 1 0 .4-7.5L4 10"/></svg>
+                <span>Restart</span>
+              </button>
+            </div>
           </aside>
           <span class="wake-indicator" id="wakeStatus" title="Screen wake lock" aria-label="Screen wake lock inactive"><span aria-hidden="true"></span></span>
           <button class="icon-button" id="fullscreenButton" type="button" aria-label="Enter full screen" title="Full screen">
@@ -40,20 +45,24 @@
         </div>
       </header>
 
-      <section class="presentation-stage" data-timer="presentation" aria-labelledby="presentationTitle">
+      <section class="presentation-stage" id="mainStage" data-active-timer="presentation" aria-labelledby="mainTitle">
         <div class="presentation-stage__label">
           <span class="signal-dot" aria-hidden="true"></span>
-          <h1 id="presentationTitle">Presentation</h1>
-          <span class="presentation-stage__target"><span id="presentationTarget">05:00</span> target</span>
+          <h1 id="mainTitle">Presentation</h1>
+          <span class="presentation-stage__target"><span id="mainTarget">05:00</span> target</span>
         </div>
-        <div class="presentation-time" id="presentationDisplay" role="timer" aria-live="off">00:00</div>
-        <div class="presentation-progress" aria-hidden="true"><span id="presentationProgress"></span></div>
+        <div class="presentation-time" id="mainDisplay" role="timer" aria-live="off">00:00</div>
+        <div class="presentation-progress" aria-hidden="true"><span id="mainProgress"></span></div>
         <div class="presentation-stage__controls">
-          <span class="presentation-state" id="presentationState">Ready</span>
+          <span class="presentation-state" id="mainState">Ready</span>
           <button class="button button--primary" id="startBothButton" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z"/></svg>
             <span>Start</span>
           </button>
+        </div>
+        <div class="visually-hidden" aria-live="polite">
+          <span id="presentationState">Ready</span>
+          <span id="sessionState">Ready</span>
         </div>
       </section>
     </main>

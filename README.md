@@ -5,6 +5,8 @@ A large-format dual count-up timer for interviews, presentations, and timed sess
 ## Features
 
 - Two synchronized count-up timers that begin at `00:00` and stop at their configured targets
+- Automatic handoff to the full-session clock when presentation time expires
+- One-click presentation restart without resetting or interrupting the session clock
 - Configurable minutes and seconds for each timer
 - Four synthesized alarm styles, 4/8/15-second alarm lengths, volume control, start cue, and alarm preview
 - Four light themes, four dark themes, and a dedicated high-contrast theme

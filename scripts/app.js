@@ -12,37 +12,66 @@ let animationFrame = null;
 let wakeLock = null;
 
 const timerConfig = {
-  presentation: { label: "Presentation", durationKey: "presentationSeconds" },
-  session: { label: "Full session", durationKey: "sessionSeconds" },
+  presentation: { label: "Presentation", shortLabel: "Presentation", durationKey: "presentationSeconds" },
+  session: { label: "Full session", shortLabel: "Session", durationKey: "sessionSeconds" },
 };
+
+const stateLabels = { ready: "Ready", running: "Running", paused: "Paused", complete: "Time up" };
 
 const timers = Object.fromEntries(
   Object.entries(timerConfig).map(([name, config]) => [
     name,
     new CountdownTimer({
       durationMs: settings[config.durationKey] * 1000,
-      onTick: (snapshot) => renderTimer(name, snapshot),
+      onTick: () => renderViews(),
       onComplete: () => handleComplete(name),
     }),
   ]),
 );
 
-function renderTimer(name, snapshot) {
-  const panel = $(`[data-timer="${name}"]`);
-  const display = $(`#${name}Display`);
-  const state = $(`#${name}State`);
-  const stateLabels = { ready: "Ready", running: "Running", paused: "Paused", complete: "Time up" };
-
+function renderDisplay(display, name, snapshot) {
   display.textContent = formatDuration(snapshot.elapsedMs);
   display.classList.toggle("has-hours", display.textContent.split(":").length === 3);
   display.setAttribute(
     "aria-label",
     `${timerConfig[name].label}: ${display.textContent} elapsed of ${formatDuration(snapshot.durationMs)}`,
   );
-  state.textContent = stateLabels[snapshot.state];
-  $(`#${name}Progress`).style.transform = `scaleX(${Math.max(0, snapshot.progress)})`;
-  panel.classList.toggle("is-warning", snapshot.state === "running" && snapshot.remainingMs <= 60_000);
-  panel.classList.toggle("is-complete", snapshot.state === "complete");
+}
+
+function renderViews() {
+  if (!timers.presentation || !timers.session) return;
+
+  const mainName = timers.presentation.state === "complete" ? "session" : "presentation";
+  const cornerName = mainName === "presentation" ? "session" : "presentation";
+  const mainSnapshot = timers[mainName].snapshot();
+  const cornerSnapshot = timers[cornerName].snapshot();
+  const stage = $("#mainStage");
+  const corner = $("#cornerClock");
+
+  renderDisplay($("#mainDisplay"), mainName, mainSnapshot);
+  $("#mainTitle").textContent = timerConfig[mainName].label;
+  $("#mainTarget").textContent = formatDuration(mainSnapshot.durationMs);
+  $("#mainState").textContent = stateLabels[mainSnapshot.state];
+  $("#mainProgress").style.transform = `scaleX(${Math.max(0, mainSnapshot.progress)})`;
+  stage.dataset.activeTimer = mainName;
+  stage.classList.toggle("is-warning", mainSnapshot.state === "running" && mainSnapshot.remainingMs <= 60_000);
+  stage.classList.toggle("is-complete", mainSnapshot.state === "complete");
+
+  renderDisplay($("#cornerDisplay"), cornerName, cornerSnapshot);
+  $("#cornerLabel").textContent = timerConfig[cornerName].shortLabel;
+  $("#cornerTarget").textContent = formatDuration(cornerSnapshot.durationMs);
+  $("#cornerProgress").style.transform = `scaleX(${Math.max(0, cornerSnapshot.progress)})`;
+  corner.setAttribute("aria-label", `${timerConfig[cornerName].label} timer`);
+  corner.classList.toggle("is-warning", cornerSnapshot.state === "running" && cornerSnapshot.remainingMs <= 60_000);
+  corner.classList.toggle("is-complete", cornerSnapshot.state === "complete");
+
+  Object.entries(timers).forEach(([name, timer]) => {
+    $(`#${name}State`).textContent = stateLabels[timer.state];
+  });
+
+  $("#restartPresentationButton").hidden = !(
+    timers.presentation.state === "complete" && timers.session.state !== "complete"
+  );
 }
 
 function tickLoop() {
@@ -67,7 +96,7 @@ function startTimers(timerNames, withCue = true) {
   dismissAlarm();
   requestWakeLock();
   ensureTickLoop();
-  timerNames.forEach((name) => renderTimer(name, timers[name].snapshot()));
+  renderViews();
   renderMasterControls();
 }
 
@@ -81,9 +110,9 @@ function resetTimers(timerNames) {
     const key = timerConfig[name].durationKey;
     const durationMs = settings[key] * 1000;
     timers[name].reset(durationMs);
-    $(`#${name}Target`).textContent = formatDuration(durationMs);
   });
   dismissAlarm();
+  renderViews();
   renderMasterControls();
   if (!Object.values(timers).some((timer) => timer.state === "running")) releaseWakeLock();
 }
@@ -92,6 +121,11 @@ function toggleBoth() {
   const names = Object.keys(timers);
   if (names.some((name) => timers[name].state === "running")) pauseTimers(names);
   else startTimers(names);
+}
+
+function restartPresentation() {
+  timers.presentation.reset(settings.presentationSeconds * 1000);
+  startTimers(["presentation"]);
 }
 
 function renderMasterControls() {
@@ -104,6 +138,7 @@ function renderMasterControls() {
 }
 
 function handleComplete(name) {
+  renderViews();
   sound.play("alarm", settings.soundStyle, settings.volume, settings.alarmDurationSeconds);
   $("#alarmTitle").textContent = "Time is up";
   $("#alarmMessage").textContent = `${timerConfig[name].label} timer finished`;
@@ -212,6 +247,7 @@ async function toggleFullscreen() {
 }
 
 $("#startBothButton").addEventListener("click", toggleBoth);
+$("#restartPresentationButton").addEventListener("click", restartPresentation);
 $("#dismissAlarmButton").addEventListener("click", dismissAlarm);
 $("#settingsButton").addEventListener("click", openSettings);
 $("#closeSettingsButton").addEventListener("click", closeSettings);
@@ -246,8 +282,5 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.documentElement.dataset.theme = settings.visualTheme;
-Object.entries(timerConfig).forEach(([name, config]) => {
-  $(`#${name}Target`).textContent = formatDuration(settings[config.durationKey] * 1000);
-});
-Object.entries(timers).forEach(([name, timer]) => renderTimer(name, timer.snapshot()));
+renderViews();
 renderMasterControls();

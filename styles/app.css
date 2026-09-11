@@ -95,6 +95,8 @@ select:focus-visible {
   color: var(--base-muted);
 }
 
+.session-clock:has(.corner-restart:not([hidden])) { width: 268px; }
+
 .session-clock__readout {
   display: flex;
   align-items: baseline;
@@ -123,7 +125,14 @@ select:focus-visible {
 
 .session-clock__target { font-size: .68rem; }
 
+.session-clock__footer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .session-clock__track {
+  flex: 1;
   height: 2px;
   margin-top: 7px;
   overflow: hidden;
@@ -139,6 +148,26 @@ select:focus-visible {
   transform-origin: left center;
   background: var(--secondary);
 }
+
+.corner-restart {
+  min-height: 25px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin: 4px -4px -4px 0;
+  padding: 0 5px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--primary);
+  background: transparent;
+  font-size: .67rem;
+  font-weight: 700;
+}
+
+.corner-restart[hidden] { display: none; }
+.corner-restart:hover { background: var(--base-300); }
+.corner-restart:active { transform: scale(.96); }
+.corner-restart svg { width: 13px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 
 .wake-indicator {
   width: 18px;
@@ -262,6 +291,11 @@ select:focus-visible {
   transform: scaleX(0);
   transform-origin: left center;
   background: var(--primary);
+}
+
+.presentation-stage[data-active-timer="session"] .signal-dot,
+.presentation-stage[data-active-timer="session"] .presentation-progress span {
+  background: var(--secondary);
 }
 
 .presentation-stage__controls {
@@ -476,9 +510,11 @@ kbd {
   .brand > span:last-child { display: none; }
   .operator-corner { gap: 3px; }
   .session-clock { width: 138px; padding-inline: 9px; }
+  .session-clock:has(.corner-restart:not([hidden])) { width: 184px; }
   .session-clock__label { display: none; }
   .session-clock__readout { justify-content: center; }
   .session-clock__time { font-size: .84rem; }
+  .corner-restart span { display: none; }
   .wake-indicator { display: none; }
   .icon-button { width: 36px; height: 36px; }
   .presentation-stage { padding: 42px 0 26px; }
