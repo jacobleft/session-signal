@@ -4,22 +4,22 @@ export class CountdownTimer {
     this.onTick = onTick;
     this.onComplete = onComplete;
     this.durationMs = durationMs;
-    this.remainingMs = durationMs;
+    this.elapsedMs = 0;
     this.state = "ready";
-    this.endsAt = null;
+    this.startedAt = null;
   }
 
   start() {
-    if (this.state === "running" || this.remainingMs <= 0) return false;
-    this.endsAt = this.now() + this.remainingMs;
+    if (this.state === "running" || this.elapsedMs >= this.durationMs) return false;
+    this.startedAt = this.now() - this.elapsedMs;
     this.state = "running";
     return true;
   }
 
   pause() {
     if (this.state !== "running") return false;
-    this.remainingMs = Math.max(0, this.endsAt - this.now());
-    this.endsAt = null;
+    this.elapsedMs = Math.min(this.durationMs, this.now() - this.startedAt);
+    this.startedAt = null;
     this.state = "paused";
     this.onTick?.(this.snapshot());
     return true;
@@ -27,18 +27,18 @@ export class CountdownTimer {
 
   reset(durationMs = this.durationMs) {
     this.durationMs = durationMs;
-    this.remainingMs = durationMs;
-    this.endsAt = null;
+    this.elapsedMs = 0;
+    this.startedAt = null;
     this.state = "ready";
     this.onTick?.(this.snapshot());
   }
 
   tick() {
     if (this.state === "running") {
-      this.remainingMs = Math.max(0, this.endsAt - this.now());
-      if (this.remainingMs <= 0) {
+      this.elapsedMs = Math.min(this.durationMs, this.now() - this.startedAt);
+      if (this.elapsedMs >= this.durationMs) {
         this.state = "complete";
-        this.endsAt = null;
+        this.startedAt = null;
         this.onTick?.(this.snapshot());
         this.onComplete?.(this.snapshot());
         return;
@@ -50,9 +50,10 @@ export class CountdownTimer {
   snapshot() {
     return {
       durationMs: this.durationMs,
-      remainingMs: this.remainingMs,
+      elapsedMs: this.elapsedMs,
+      remainingMs: Math.max(0, this.durationMs - this.elapsedMs),
       state: this.state,
-      progress: this.durationMs ? this.remainingMs / this.durationMs : 0,
+      progress: this.durationMs ? this.elapsedMs / this.durationMs : 0,
     };
   }
 }

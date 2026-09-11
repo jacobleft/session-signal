@@ -6,12 +6,20 @@ export const DEFAULT_SETTINGS = Object.freeze({
   soundStyle: "chime",
   volume: 0.7,
   startSound: true,
-  visualTheme: "control-room",
+  visualTheme: "sunset",
 });
+
+const LEGACY_THEMES = {
+  "control-room": "sunset",
+  paper: "light",
+  contrast: "business",
+};
 
 export function loadSettings() {
   try {
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(STORAGE_KEY)) };
+    const stored = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(STORAGE_KEY)) };
+    stored.visualTheme = LEGACY_THEMES[stored.visualTheme] ?? stored.visualTheme;
+    return stored;
   } catch {
     return { ...DEFAULT_SETTINGS };
   }

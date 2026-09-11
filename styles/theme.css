@@ -1,57 +1,136 @@
 :root,
-[data-theme="control-room"] {
+[data-theme="sunset"] {
   color-scheme: dark;
-  --canvas: #101216;
-  --surface: #171a20;
-  --surface-raised: #20242c;
-  --line: #343943;
-  --line-strong: #4c535f;
-  --text: #f4f5f2;
-  --muted: #9ea5ae;
-  --dim: #6f7680;
-  --presentation: #f6a800;
-  --presentation-soft: #3a2b0d;
-  --session: #29c4d6;
-  --session-soft: #123039;
-  --danger: #ff5449;
-  --button-text: #101216;
-  --shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+  --base-100: #1b232d;
+  --base-200: #171e27;
+  --base-300: #121820;
+  --base-content: #b9c8d6;
+  --base-muted: #788897;
+  --primary: #ee8363;
+  --primary-content: #2b1712;
+  --secondary: #e36c8d;
+  --accent: #a68be8;
+  --info: #93d9e8;
+  --success: #91d7af;
+  --warning: #e8c486;
+  --error: #ef9a90;
 }
 
-[data-theme="paper"] {
+[data-theme="nord"] {
+  color-scheme: dark;
+  --base-100: #2e3440;
+  --base-200: #272c36;
+  --base-300: #20242d;
+  --base-content: #eceff4;
+  --base-muted: #a7b0c0;
+  --primary: #88c0d0;
+  --primary-content: #172126;
+  --secondary: #81a1c1;
+  --accent: #b48ead;
+  --info: #8fbcbb;
+  --success: #a3be8c;
+  --warning: #ebcb8b;
+  --error: #bf616a;
+}
+
+[data-theme="dracula"] {
+  color-scheme: dark;
+  --base-100: #282a36;
+  --base-200: #21222c;
+  --base-300: #191a21;
+  --base-content: #f8f8f2;
+  --base-muted: #a7a8b4;
+  --primary: #bd93f9;
+  --primary-content: #241833;
+  --secondary: #ff79c6;
+  --accent: #8be9fd;
+  --info: #8be9fd;
+  --success: #50fa7b;
+  --warning: #f1fa8c;
+  --error: #ff5555;
+}
+
+[data-theme="synthwave"] {
+  color-scheme: dark;
+  --base-100: #1a103d;
+  --base-200: #25164e;
+  --base-300: #120b2b;
+  --base-content: #f6e9ff;
+  --base-muted: #b8a9d4;
+  --primary: #e779c1;
+  --primary-content: #2d1026;
+  --secondary: #58c7f3;
+  --accent: #f3cc30;
+  --info: #58c7f3;
+  --success: #72f1b8;
+  --warning: #fede5d;
+  --error: #fe4450;
+}
+
+[data-theme="cyberpunk"] {
   color-scheme: light;
-  --canvas: #edf0f2;
-  --surface: #ffffff;
-  --surface-raised: #f6f7f8;
-  --line: #d1d5da;
-  --line-strong: #aeb5bd;
-  --text: #1a1d21;
-  --muted: #5e6670;
-  --dim: #838b94;
-  --presentation: #bd6900;
-  --presentation-soft: #f4e5ca;
-  --session: #087d91;
-  --session-soft: #d9edf0;
-  --danger: #c72e24;
-  --button-text: #ffffff;
-  --shadow: 0 30px 80px rgba(40, 48, 58, 0.16);
+  --base-100: #fff248;
+  --base-200: #f3e52d;
+  --base-300: #dfd21c;
+  --base-content: #171717;
+  --base-muted: #655f16;
+  --primary: #ff4f91;
+  --primary-content: #2a0715;
+  --secondary: #00a8c4;
+  --accent: #6d39e8;
+  --info: #007f96;
+  --success: #248232;
+  --warning: #a14e00;
+  --error: #d62020;
 }
 
-[data-theme="contrast"] {
+[data-theme="business"] {
   color-scheme: dark;
-  --canvas: #000000;
-  --surface: #000000;
-  --surface-raised: #111111;
-  --line: #ffffff;
-  --line-strong: #ffffff;
-  --text: #ffffff;
-  --muted: #ffffff;
-  --dim: #d0d0d0;
-  --presentation: #ffdf00;
-  --presentation-soft: #332d00;
-  --session: #00e5ff;
-  --session-soft: #003238;
-  --danger: #ff392e;
-  --button-text: #000000;
-  --shadow: none;
+  --base-100: #202020;
+  --base-200: #181818;
+  --base-300: #101010;
+  --base-content: #e8e8e8;
+  --base-muted: #999999;
+  --primary: #4d9de0;
+  --primary-content: #071725;
+  --secondary: #7fb069;
+  --accent: #e0a458;
+  --info: #4d9de0;
+  --success: #76b947;
+  --warning: #f2c14e;
+  --error: #e15554;
+}
+
+[data-theme="coffee"] {
+  color-scheme: dark;
+  --base-100: #20161f;
+  --base-200: #2b1e28;
+  --base-300: #170f16;
+  --base-content: #e9dcc1;
+  --base-muted: #a99981;
+  --primary: #db924b;
+  --primary-content: #281509;
+  --secondary: #9f8c76;
+  --accent: #c8a97e;
+  --info: #7db9c7;
+  --success: #9bb56e;
+  --warning: #e1b866;
+  --error: #d97563;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --base-100: #ffffff;
+  --base-200: #f3f4f6;
+  --base-300: #e5e7eb;
+  --base-content: #1f2937;
+  --base-muted: #6b7280;
+  --primary: #5b63d3;
+  --primary-content: #ffffff;
+  --secondary: #0f9aa8;
+  --accent: #a755c2;
+  --info: #1677c8;
+  --success: #27864b;
+  --warning: #9a6700;
+  --error: #cc3b32;
 }

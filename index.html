@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en" data-theme="control-room">
+<html lang="en" data-theme="sunset">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#101216" />
+    <meta name="theme-color" content="#1b232d" />
     <meta
       name="description"
       content="A clear, synchronized dual timer for interviews and presentations."
@@ -17,74 +17,45 @@
     <main class="app-shell">
       <header class="topbar">
         <div class="brand" aria-label="Session Signal">
-          <span class="brand-mark" aria-hidden="true">
-            <span></span><span></span>
-          </span>
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span></span>
           <span>Session Signal</span>
         </div>
-        <div class="topbar-actions">
-          <span class="status-chip" id="wakeStatus" title="Keeps the display awake while timers run">
-            <span class="status-dot" aria-hidden="true"></span>
-            Screen awake
-          </span>
-          <button class="icon-button" id="fullscreenButton" type="button" aria-label="Enter full screen" title="Full screen (F)">
+        <div class="operator-corner">
+          <aside class="session-clock" data-timer="session" aria-label="Full session timer">
+            <div class="session-clock__readout">
+              <span class="session-clock__label">Session</span>
+              <span class="session-clock__time" id="sessionDisplay" role="timer" aria-live="off">00:00</span>
+              <span class="session-clock__target">/ <span id="sessionTarget">20:00</span></span>
+            </div>
+            <div class="session-clock__track" aria-hidden="true"><span id="sessionProgress"></span></div>
+            <span class="visually-hidden" id="sessionState">Ready</span>
+          </aside>
+          <span class="wake-indicator" id="wakeStatus" title="Screen wake lock" aria-label="Screen wake lock inactive"><span aria-hidden="true"></span></span>
+          <button class="icon-button" id="fullscreenButton" type="button" aria-label="Enter full screen" title="Full screen">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5m13 5h5v-5"/></svg>
           </button>
-          <button class="icon-button" id="settingsButton" type="button" aria-label="Open settings" aria-expanded="false" title="Settings (S)">
+          <button class="icon-button" id="settingsButton" type="button" aria-label="Open settings" aria-expanded="false" title="Settings">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06a1.7 1.7 0 0 0-1.88-.34 1.7 1.7 0 0 0-1.03 1.55V21h-4v-.08A1.7 1.7 0 0 0 8.96 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1.03H3v-4h.08A1.7 1.7 0 0 0 4.6 8.94a1.7 1.7 0 0 0-.34-1.88L4.2 7l2.83-2.83.06.06A1.7 1.7 0 0 0 8.96 4.6 1.7 1.7 0 0 0 10 3.08V3h4v.08a1.7 1.7 0 0 0 1.03 1.55 1.7 1.7 0 0 0 1.88-.34l.06-.06L19.8 7l-.06.06a1.7 1.7 0 0 0-.34 1.88A1.7 1.7 0 0 0 20.92 10H21v4h-.08A1.7 1.7 0 0 0 19.4 15Z"/></svg>
           </button>
         </div>
       </header>
 
-      <section class="timer-grid" aria-label="Interview timers">
-        <article class="timer-panel timer-panel--presentation" data-timer="presentation">
-          <header class="timer-heading">
-            <div>
-              <span class="timer-symbol" aria-hidden="true"></span>
-              <h1>Presentation</h1>
-            </div>
-            <span class="timer-state" id="presentationState">Ready</span>
-          </header>
-          <div class="time-display" id="presentationDisplay" role="timer" aria-live="off">05:00</div>
-          <div class="progress-track" aria-hidden="true">
-            <div class="progress-bar" id="presentationProgress"></div>
-          </div>
-          <div class="timer-actions">
-            <button class="button button--quiet" data-action="toggle" data-target="presentation" type="button">Start</button>
-            <button class="button button--text" data-action="reset" data-target="presentation" type="button">Reset</button>
-          </div>
-        </article>
-
-        <article class="timer-panel timer-panel--session" data-timer="session">
-          <header class="timer-heading">
-            <div>
-              <span class="timer-symbol" aria-hidden="true"></span>
-              <h1>Full session</h1>
-            </div>
-            <span class="timer-state" id="sessionState">Ready</span>
-          </header>
-          <div class="time-display" id="sessionDisplay" role="timer" aria-live="off">20:00</div>
-          <div class="progress-track" aria-hidden="true">
-            <div class="progress-bar" id="sessionProgress"></div>
-          </div>
-          <div class="timer-actions">
-            <button class="button button--quiet" data-action="toggle" data-target="session" type="button">Start</button>
-            <button class="button button--text" data-action="reset" data-target="session" type="button">Reset</button>
-          </div>
-        </article>
-      </section>
-
-      <footer class="master-controls">
-        <p class="keyboard-hint"><kbd>Space</kbd> starts or pauses both timers</p>
-        <div class="master-actions">
+      <section class="presentation-stage" data-timer="presentation" aria-labelledby="presentationTitle">
+        <div class="presentation-stage__label">
+          <span class="signal-dot" aria-hidden="true"></span>
+          <h1 id="presentationTitle">Presentation</h1>
+          <span class="presentation-stage__target"><span id="presentationTarget">05:00</span> target</span>
+        </div>
+        <div class="presentation-time" id="presentationDisplay" role="timer" aria-live="off">00:00</div>
+        <div class="presentation-progress" aria-hidden="true"><span id="presentationProgress"></span></div>
+        <div class="presentation-stage__controls">
+          <span class="presentation-state" id="presentationState">Ready</span>
           <button class="button button--primary" id="startBothButton" type="button">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 5 11 7-11 7V5Z"/></svg>
-            <span>Start both</span>
+            <span>Start</span>
           </button>
-          <button class="button button--secondary" id="resetBothButton" type="button">Reset both</button>
         </div>
-        <p class="shortcut-hint"><kbd>R</kbd> resets both</p>
-      </footer>
+      </section>
     </main>
 
     <div class="alarm-banner" id="alarmBanner" role="alert" hidden>
@@ -150,9 +121,14 @@
           <label class="select-field">
             <span>Visual theme</span>
             <select id="visualTheme">
-              <option value="control-room">Control room</option>
-              <option value="paper">Paper light</option>
-              <option value="contrast">High contrast</option>
+              <option value="sunset">Sunset</option>
+              <option value="nord">Nord</option>
+              <option value="dracula">Dracula</option>
+              <option value="synthwave">Synthwave</option>
+              <option value="cyberpunk">Cyberpunk</option>
+              <option value="business">Business</option>
+              <option value="coffee">Coffee</option>
+              <option value="light">Light</option>
             </select>
           </label>
         </fieldset>

@@ -3,9 +3,10 @@ import { SoundEngine } from "./audio.js";
 import { loadSettings, saveSettings } from "./storage.js";
 
 const $ = (selector, scope = document) => scope.querySelector(selector);
-const $$ = (selector, scope = document) => [...scope.querySelectorAll(selector)];
 
 let settings = loadSettings();
+const THEME_IDS = ["sunset", "nord", "dracula", "synthwave", "cyberpunk", "business", "coffee", "light"];
+if (!THEME_IDS.includes(settings.visualTheme)) settings.visualTheme = "sunset";
 const sound = new SoundEngine();
 let animationFrame = null;
 let wakeLock = null;
@@ -30,14 +31,15 @@ function renderTimer(name, snapshot) {
   const panel = $(`[data-timer="${name}"]`);
   const display = $(`#${name}Display`);
   const state = $(`#${name}State`);
-  const action = $(`[data-action="toggle"][data-target="${name}"]`);
   const stateLabels = { ready: "Ready", running: "Running", paused: "Paused", complete: "Time up" };
 
-  display.textContent = formatDuration(snapshot.remainingMs);
-  display.setAttribute("aria-label", `${timerConfig[name].label}: ${display.textContent} remaining`);
+  display.textContent = formatDuration(snapshot.elapsedMs);
+  display.classList.toggle("has-hours", display.textContent.split(":").length === 3);
+  display.setAttribute(
+    "aria-label",
+    `${timerConfig[name].label}: ${display.textContent} elapsed of ${formatDuration(snapshot.durationMs)}`,
+  );
   state.textContent = stateLabels[snapshot.state];
-  action.textContent = snapshot.state === "running" ? "Pause" : snapshot.state === "complete" ? "Finished" : "Start";
-  action.disabled = snapshot.state === "complete";
   $(`#${name}Progress`).style.transform = `scaleX(${Math.max(0, snapshot.progress)})`;
   panel.classList.toggle("is-warning", snapshot.state === "running" && snapshot.remainingMs <= 60_000);
   panel.classList.toggle("is-complete", snapshot.state === "complete");
@@ -77,16 +79,13 @@ function pauseTimers(timerNames) {
 function resetTimers(timerNames) {
   timerNames.forEach((name) => {
     const key = timerConfig[name].durationKey;
-    timers[name].reset(settings[key] * 1000);
+    const durationMs = settings[key] * 1000;
+    timers[name].reset(durationMs);
+    $(`#${name}Target`).textContent = formatDuration(durationMs);
   });
   dismissAlarm();
   renderMasterControls();
   if (!Object.values(timers).some((timer) => timer.state === "running")) releaseWakeLock();
-}
-
-function toggleOne(name) {
-  if (timers[name].state === "running") pauseTimers([name]);
-  else startTimers([name]);
 }
 
 function toggleBoth() {
@@ -99,7 +98,7 @@ function renderMasterControls() {
   const anyRunning = Object.values(timers).some((timer) => timer.state === "running");
   const allComplete = Object.values(timers).every((timer) => timer.state === "complete");
   const button = $("#startBothButton");
-  $("span", button).textContent = anyRunning ? "Pause both" : allComplete ? "Both finished" : "Start both";
+  $("span", button).textContent = anyRunning ? "Pause" : allComplete ? "Finished" : "Start";
   button.disabled = allComplete;
   $("svg path", button).setAttribute("d", anyRunning ? "M7 5h4v14H7V5Zm6 0h4v14h-4V5Z" : "m8 5 11 7-11 7V5Z");
 }
@@ -126,7 +125,11 @@ async function requestWakeLock() {
   try {
     wakeLock = await navigator.wakeLock.request("screen");
     chip.classList.add("is-active");
-    wakeLock.addEventListener("release", () => chip.classList.remove("is-active"), { once: true });
+    chip.setAttribute("aria-label", "Screen wake lock active");
+    wakeLock.addEventListener("release", () => {
+      chip.classList.remove("is-active");
+      chip.setAttribute("aria-label", "Screen wake lock inactive");
+    }, { once: true });
   } catch {
     chip.classList.remove("is-active");
   }
@@ -147,6 +150,7 @@ function openSettings() {
 }
 
 function closeSettings() {
+  document.documentElement.dataset.theme = settings.visualTheme;
   $("#settingsDrawer").classList.remove("is-open");
   $("#settingsDrawer").setAttribute("aria-hidden", "true");
   $("#settingsButton").setAttribute("aria-expanded", "false");
@@ -203,10 +207,7 @@ async function toggleFullscreen() {
   else await document.exitFullscreen?.();
 }
 
-$$('[data-action="toggle"]').forEach((button) => button.addEventListener("click", () => toggleOne(button.dataset.target)));
-$$('[data-action="reset"]').forEach((button) => button.addEventListener("click", () => resetTimers([button.dataset.target])));
 $("#startBothButton").addEventListener("click", toggleBoth);
-$("#resetBothButton").addEventListener("click", () => resetTimers(Object.keys(timers)));
 $("#dismissAlarmButton").addEventListener("click", dismissAlarm);
 $("#settingsButton").addEventListener("click", openSettings);
 $("#closeSettingsButton").addEventListener("click", closeSettings);
@@ -236,5 +237,8 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.documentElement.dataset.theme = settings.visualTheme;
+Object.entries(timerConfig).forEach(([name, config]) => {
+  $(`#${name}Target`).textContent = formatDuration(settings[config.durationKey] * 1000);
+});
 Object.entries(timers).forEach(([name, timer]) => renderTimer(name, timer.snapshot()));
 renderMasterControls();

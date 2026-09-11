@@ -1,13 +1,13 @@
 # Session Signal
 
-A large-format dual countdown timer for interviews, presentations, and timed sessions. One master control starts a presentation timer and a full-session timer at the same moment.
+A large-format dual count-up timer for interviews, presentations, and timed sessions. One master control starts a presentation timer and a discreet full-session timer at the same moment.
 
 ## Features
 
-- Two synchronized, independently controllable countdown timers
+- Two synchronized count-up timers that begin at `00:00` and stop at their configured targets
 - Configurable minutes and seconds for each timer
 - Four synthesized alarm styles, volume control, start cue, and alarm preview
-- Control-room, paper-light, and high-contrast visual themes
+- Eight semantic visual themes inspired by instrument-console interfaces
 - Full-screen mode, keyboard shortcuts, screen wake lock, and responsive layout
 - Settings saved in the browser; no account or backend required
 
