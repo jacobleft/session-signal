@@ -6,7 +6,7 @@ A large-format dual count-up timer for interviews, presentations, and timed sess
 
 - Two synchronized count-up timers that begin at `00:00` and stop at their configured targets
 - Configurable minutes and seconds for each timer
-- Four synthesized alarm styles, volume control, start cue, and alarm preview
+- Four synthesized alarm styles, 4/8/15-second alarm lengths, volume control, start cue, and alarm preview
 - Four light themes, four dark themes, and a dedicated high-contrast theme
 - Full-screen mode, keyboard shortcuts, screen wake lock, and responsive layout
 - Settings saved in the browser; no account or backend required

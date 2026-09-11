@@ -104,7 +104,7 @@ function renderMasterControls() {
 }
 
 function handleComplete(name) {
-  sound.play("alarm", settings.soundStyle, settings.volume);
+  sound.play("alarm", settings.soundStyle, settings.volume, settings.alarmDurationSeconds);
   $("#alarmTitle").textContent = "Time is up";
   $("#alarmMessage").textContent = `${timerConfig[name].label} timer finished`;
   $("#alarmBanner").hidden = false;
@@ -150,6 +150,7 @@ function openSettings() {
 }
 
 function closeSettings() {
+  sound.stop();
   document.documentElement.dataset.theme = settings.visualTheme;
   $("#settingsDrawer").classList.remove("is-open");
   $("#settingsDrawer").setAttribute("aria-hidden", "true");
@@ -165,6 +166,7 @@ function populateSettingsForm() {
     $(`#${name}Seconds`).value = total % 60;
   });
   $("#soundStyle").value = settings.soundStyle;
+  $("#alarmDuration").value = String(settings.alarmDurationSeconds);
   $("#volume").value = Math.round(settings.volume * 100);
   $("#volumeOutput").textContent = `${Math.round(settings.volume * 100)}%`;
   $("#startSound").checked = settings.startSound;
@@ -193,6 +195,7 @@ function saveForm(event) {
     presentationSeconds,
     sessionSeconds,
     soundStyle: $("#soundStyle").value,
+    alarmDurationSeconds: Number($("#alarmDuration").value),
     volume: Number($("#volume").value) / 100,
     startSound: $("#startSound").checked,
     visualTheme: $("#visualTheme").value,
@@ -215,7 +218,12 @@ $("#closeSettingsButton").addEventListener("click", closeSettings);
 $("#drawerBackdrop").addEventListener("click", closeSettings);
 $("#settingsForm").addEventListener("submit", saveForm);
 $("#volume").addEventListener("input", (event) => { $("#volumeOutput").textContent = `${event.target.value}%`; });
-$("#previewSoundButton").addEventListener("click", () => sound.play("alarm", $("#soundStyle").value, Number($("#volume").value) / 100));
+$("#previewSoundButton").addEventListener("click", () => sound.play(
+  "alarm",
+  $("#soundStyle").value,
+  Number($("#volume").value) / 100,
+  Math.min(2.5, Number($("#alarmDuration").value)),
+));
 $("#visualTheme").addEventListener("change", (event) => { document.documentElement.dataset.theme = event.target.value; });
 $("#fullscreenButton").addEventListener("click", toggleFullscreen);
 

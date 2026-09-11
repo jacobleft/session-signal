@@ -48,16 +48,25 @@ export class SoundEngine {
     return this.context;
   }
 
-  async play(kind, style = "chime", volume = 0.7) {
+  async play(kind, style = "chime", volume = 0.7, repeatForSeconds = 0) {
     const context = await this.ensureContext();
     this.stop();
     const pattern = SOUND_PATTERNS[style]?.[kind] ?? SOUND_PATTERNS.chime[kind];
     const startAt = context.currentTime + 0.02;
+    const patternDuration = Math.max(...pattern.map((note) => note.offset + note.duration));
+    const repeatEvery = patternDuration + 0.35;
+    const repeatOffsets = [0];
 
-    pattern.forEach((note) => {
+    if (kind === "alarm" && repeatForSeconds > patternDuration) {
+      for (let offset = repeatEvery; offset + patternDuration <= repeatForSeconds; offset += repeatEvery) {
+        repeatOffsets.push(offset);
+      }
+    }
+
+    repeatOffsets.flatMap((repeatOffset) => pattern.map((note) => ({ ...note, repeatOffset }))).forEach((note) => {
       const oscillator = context.createOscillator();
       const gain = context.createGain();
-      const noteStart = startAt + note.offset;
+      const noteStart = startAt + note.repeatOffset + note.offset;
       const noteGain = Math.min(0.4, volume * 0.38 * (note.gain ?? 1));
 
       oscillator.type = note.type;

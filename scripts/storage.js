@@ -6,6 +6,7 @@ export const DEFAULT_SETTINGS = Object.freeze({
   presentationSeconds: 5 * 60,
   sessionSeconds: 20 * 60,
   soundStyle: "chime",
+  alarmDurationSeconds: 8,
   volume: 0.7,
   startSound: true,
   visualTheme: "light",
