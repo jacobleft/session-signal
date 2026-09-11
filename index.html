@@ -89,7 +89,10 @@
         <strong id="alarmTitle">Time is up</strong>
         <span id="alarmMessage">Presentation timer finished</span>
       </div>
-      <button class="button button--light" id="dismissAlarmButton" type="button">Dismiss alarm</button>
+      <div class="alarm-banner__actions">
+        <button class="button button--alarm-secondary" id="dismissAlarmButton" type="button">Dismiss alarm</button>
+        <button class="button button--light" id="resetAllButton" type="button" hidden>Reset all timers</button>
+      </div>
     </div>
 
     <div class="drawer-backdrop" id="drawerBackdrop" hidden></div>

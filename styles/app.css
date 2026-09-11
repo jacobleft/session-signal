@@ -349,6 +349,7 @@ select:focus-visible {
 .button--secondary { color: var(--base-content); border-color: color-mix(in srgb, var(--base-content) 18%, transparent); background: transparent; }
 .button--secondary:hover { background: var(--base-300); }
 .button--light { color: #2b1712; background: #fff; }
+.button--alarm-secondary { color: #24100c; border-color: color-mix(in srgb, #24100c 35%, transparent); background: transparent; }
 .button--wide { width: 100%; }
 
 .presentation-stage.is-warning .presentation-time { color: var(--warning); }
@@ -376,7 +377,8 @@ select:focus-visible {
 }
 
 .alarm-banner[hidden] { display: none; }
-.alarm-banner div { display: grid; gap: 2px; }
+.alarm-banner > div:first-child { display: grid; gap: 2px; }
+.alarm-banner__actions { display: flex; gap: 8px; }
 .alarm-banner strong { font-size: 1rem; }
 .alarm-banner span { font-size: .82rem; opacity: .75; }
 
@@ -624,6 +626,7 @@ kbd {
   .duration-row { grid-template-columns: 1fr 66px 66px; }
   .autostart-options { grid-template-columns: 1fr; }
   .alarm-banner { align-items: stretch; flex-direction: column; }
+  .alarm-banner__actions { display: grid; grid-template-columns: 1fr 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

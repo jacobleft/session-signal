@@ -9,6 +9,7 @@ A large-format session timer with mutually exclusive preparation and presentatio
 - Starting a fresh session automatically starts the selected phase; presentation is the default
 - The active phase becomes the main display while inactive phases stay in the corner
 - Start, resume, or restart either phase without resetting the session clock
+- A visible reset-all control replaces the main action when the session finishes
 - Configurable minutes and seconds for each timer
 - Four synthesized alarm styles, 4/8/15-second alarm lengths, volume control, start cue, and alarm preview
 - Four light themes, four dark themes, and a dedicated high-contrast theme

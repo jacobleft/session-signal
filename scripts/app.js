@@ -140,6 +140,11 @@ function resetTimers(timerNames) {
 }
 
 function toggleMainTimer() {
+  if (timers.session.state === "complete") {
+    resetTimers(Object.keys(timers));
+    return;
+  }
+
   const activePhase = phaseNames.find((name) => timers[name].state === "running");
   const mainName = activePhase ?? "session";
   if (timers[mainName].state === "running") {
@@ -171,9 +176,10 @@ function renderMainControls() {
   const mainTimer = timers[mainName];
   const button = $("#mainActionButton");
   const isRunning = mainTimer.state === "running";
+  const isSessionComplete = timers.session.state === "complete";
   const autoStartLabel = timerConfig[settings.autoStartPhase].label.toLowerCase();
-  const label = mainTimer.state === "complete"
-    ? "Finished"
+  const label = isSessionComplete
+    ? "Reset all timers"
     : isRunning
       ? `Pause ${timerConfig[mainName].label.toLowerCase()}`
       : mainTimer.state === "paused"
@@ -181,8 +187,13 @@ function renderMainControls() {
         : `Start ${autoStartLabel} + session`;
 
   $("span", button).textContent = label;
-  button.disabled = mainTimer.state === "complete";
-  $("svg path", button).setAttribute("d", isRunning ? "M7 5h4v14H7V5Zm6 0h4v14h-4V5Z" : "m8 5 11 7-11 7V5Z");
+  button.disabled = mainTimer.state === "complete" && !isSessionComplete;
+  const iconPath = isSessionComplete
+    ? "M4 4v6h6M5.6 15a7 7 0 1 0 .4-7.5L4 10"
+    : isRunning
+      ? "M7 5h4v14H7V5Zm6 0h4v14h-4V5Z"
+      : "m8 5 11 7-11 7V5Z";
+  $("svg path", button).setAttribute("d", iconPath);
 }
 
 function handleComplete(name) {
@@ -195,6 +206,7 @@ function handleComplete(name) {
   sound.play("alarm", settings.soundStyle, settings.volume, settings.alarmDurationSeconds);
   $("#alarmTitle").textContent = "Time is up";
   $("#alarmMessage").textContent = `${timerConfig[name].label} timer finished`;
+  $("#resetAllButton").hidden = name !== "session";
   $("#alarmBanner").hidden = false;
   if (navigator.vibrate) navigator.vibrate([220, 120, 220]);
 }
@@ -308,6 +320,7 @@ $("#mainActionButton").addEventListener("click", toggleMainTimer);
   $(`#cornerAction${slot}`).addEventListener("click", (event) => activatePhase(event.currentTarget.dataset.timer));
 });
 $("#dismissAlarmButton").addEventListener("click", dismissAlarm);
+$("#resetAllButton").addEventListener("click", () => resetTimers(Object.keys(timers)));
 $("#settingsButton").addEventListener("click", openSettings);
 $("#closeSettingsButton").addEventListener("click", closeSettings);
 $("#drawerBackdrop").addEventListener("click", closeSettings);
