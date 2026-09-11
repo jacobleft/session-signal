@@ -189,7 +189,7 @@ function renderMainControls() {
   $("span", button).textContent = label;
   button.disabled = mainTimer.state === "complete" && !isSessionComplete;
   const iconPath = isSessionComplete
-    ? "M4 4v6h6M5.6 15a7 7 0 1 0 .4-7.5L4 10"
+    ? "M12 4V1L8 5l4 4V6a6 6 0 1 1-5.65 4H4.26A8 8 0 1 0 12 4Z"
     : isRunning
       ? "M7 5h4v14H7V5Zm6 0h4v14h-4V5Z"
       : "m8 5 11 7-11 7V5Z";
@@ -206,7 +206,6 @@ function handleComplete(name) {
   sound.play("alarm", settings.soundStyle, settings.volume, settings.alarmDurationSeconds);
   $("#alarmTitle").textContent = "Time is up";
   $("#alarmMessage").textContent = `${timerConfig[name].label} timer finished`;
-  $("#resetAllButton").hidden = name !== "session";
   $("#alarmBanner").hidden = false;
   if (navigator.vibrate) navigator.vibrate([220, 120, 220]);
 }
@@ -320,7 +319,6 @@ $("#mainActionButton").addEventListener("click", toggleMainTimer);
   $(`#cornerAction${slot}`).addEventListener("click", (event) => activatePhase(event.currentTarget.dataset.timer));
 });
 $("#dismissAlarmButton").addEventListener("click", dismissAlarm);
-$("#resetAllButton").addEventListener("click", () => resetTimers(Object.keys(timers)));
 $("#settingsButton").addEventListener("click", openSettings);
 $("#closeSettingsButton").addEventListener("click", closeSettings);
 $("#drawerBackdrop").addEventListener("click", closeSettings);

@@ -349,7 +349,6 @@ select:focus-visible {
 .button--secondary { color: var(--base-content); border-color: color-mix(in srgb, var(--base-content) 18%, transparent); background: transparent; }
 .button--secondary:hover { background: var(--base-300); }
 .button--light { color: #2b1712; background: #fff; }
-.button--alarm-secondary { color: #24100c; border-color: color-mix(in srgb, #24100c 35%, transparent); background: transparent; }
 .button--wide { width: 100%; }
 
 .presentation-stage.is-warning .presentation-time { color: var(--warning); }
@@ -361,10 +360,9 @@ select:focus-visible {
 .alarm-banner {
   position: fixed;
   z-index: 30;
-  left: 50%;
+  left: clamp(18px, 2.5vw, 40px);
   bottom: 22px;
-  width: min(620px, calc(100vw - 36px));
-  transform: translateX(-50%);
+  width: min(460px, calc(100vw - 36px));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -377,8 +375,7 @@ select:focus-visible {
 }
 
 .alarm-banner[hidden] { display: none; }
-.alarm-banner > div:first-child { display: grid; gap: 2px; }
-.alarm-banner__actions { display: flex; gap: 8px; }
+.alarm-banner div { display: grid; gap: 2px; }
 .alarm-banner strong { font-size: 1rem; }
 .alarm-banner span { font-size: .82rem; opacity: .75; }
 
@@ -616,6 +613,7 @@ kbd {
   .presentation-time.has-hours { font-size: clamp(4.5rem, 21vw, 7rem); }
   .presentation-progress, .presentation-stage__controls { width: min(86vw, 500px); }
   .presentation-state { visibility: hidden; }
+  .alarm-banner { top: 76px; bottom: auto; }
 }
 
 @media (max-width: 390px) {
@@ -626,7 +624,6 @@ kbd {
   .duration-row { grid-template-columns: 1fr 66px 66px; }
   .autostart-options { grid-template-columns: 1fr; }
   .alarm-banner { align-items: stretch; flex-direction: column; }
-  .alarm-banner__actions { display: grid; grid-template-columns: 1fr 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
